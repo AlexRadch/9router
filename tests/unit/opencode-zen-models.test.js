@@ -38,7 +38,7 @@ function pickTransport(provider, sourceFormat, alias, model) {
 
 describe("OpenCode Zen model catalog", () => {
   it("matches the documented model IDs", () => {
-    const ids = (PROVIDER_MODELS["opencode-zen"] || []).map((m) => m.id);
+    const ids = (PROVIDER_MODELS["ocz"] || []).map((m) => m.id);
     expect(ids).toContain("muse-spark-1.3-contributor-free");
     expect(ids).toContain("gpt-5.5");
     expect(ids).toContain("claude-opus-5");
@@ -51,19 +51,19 @@ describe("OpenCode Zen model catalog", () => {
 describe("OpenCode Zen per-model supportedFormats", () => {
   it("declares [claude] for Claude + Qwen + union-alpha models", () => {
     for (const m of CLAUDE_CAPABLE) {
-      expect(getModelSupportedFormats("opencode-zen", m)).toEqual(["claude"]);
+      expect(getModelSupportedFormats("ocz", m)).toEqual(["claude"]);
     }
   });
 
   it("declares [openai-responses] for GPT/Grok/Spark responses models", () => {
     for (const m of RESPONSES_CAPABLE) {
-      expect(getModelSupportedFormats("opencode-zen", m)).toEqual(["openai-responses"]);
+      expect(getModelSupportedFormats("ocz", m)).toEqual(["openai-responses"]);
     }
   });
 
   it("declares [openai] only for chat-only models (GLM/Kimi/MiMo) → guards /messages routing", () => {
     for (const m of CHAT_ONLY) {
-      expect(getModelSupportedFormats("opencode-zen", m)).toEqual(["openai"]);
+      expect(getModelSupportedFormats("ocz", m)).toEqual(["openai"]);
     }
   });
 });
@@ -90,34 +90,34 @@ describe("OpenCode Zen multi-endpoint transports", () => {
 describe("OpenCode Zen per-model transport guard (chatCore logic)", () => {
   it("routes MiniMax/Qwen + claude-format client to /messages", () => {
     for (const m of CLAUDE_CAPABLE) {
-      expect(pickTransport("opencode-zen", "claude", "opencode-zen", m)?.baseUrl).toBe("https://opencode.ai/zen/v1/messages");
+      expect(pickTransport("opencode-zen", "claude", "ocz", m)?.baseUrl).toBe("https://opencode.ai/zen/v1/messages");
     }
   });
 
   it("does NOT route chat-only models to /messages on a claude-format request", () => {
     for (const m of CHAT_ONLY) {
-      expect(pickTransport("opencode-zen", "claude", "opencode-zen", m)).toBeNull();
+      expect(pickTransport("opencode-zen", "claude", "ocz", m)).toBeNull();
     }
   });
 
   it("routes DeepSeek + responses-format client to /responses", () => {
     for (const m of RESPONSES_CAPABLE) {
-      expect(pickTransport("opencode-zen", "openai-responses", "opencode-zen", m)?.baseUrl).toBe("https://opencode.ai/zen/v1/responses");
+      expect(pickTransport("opencode-zen", "openai-responses", "ocz", m)?.baseUrl).toBe("https://opencode.ai/zen/v1/responses");
     }
   });
 
   it("routes Muse Spark (responses-only) to /responses, never to /messages", () => {
     for (const m of ["muse-spark-1.2", "muse-spark-1.3", "muse-spark-1.2-contributor-free", "muse-spark-1.3-contributor-free", "grok-4.6", "gpt-5.6-luna"]) {
-      expect(getModelSupportedFormats("opencode-zen", m)).toEqual(["openai-responses"]);
-      expect(pickTransport("opencode-zen", "openai-responses", "opencode-zen", m)?.baseUrl).toBe("https://opencode.ai/zen/v1/responses");
-      expect(pickTransport("opencode-zen", "claude", "opencode-zen", m)).toBeNull();
-      expect(pickTransport("opencode-zen", "openai", "opencode-zen", m)).toBeNull();
+      expect(getModelSupportedFormats("ocz", m)).toEqual(["openai-responses"]);
+      expect(pickTransport("opencode-zen", "openai-responses", "ocz", m)?.baseUrl).toBe("https://opencode.ai/zen/v1/responses");
+      expect(pickTransport("opencode-zen", "claude", "ocz", m)).toBeNull();
+      expect(pickTransport("opencode-zen", "openai", "ocz", m)).toBeNull();
     }
   });
 
   it("does NOT route MiniMax (no responses support) to /responses", () => {
     for (const m of CLAUDE_CAPABLE) {
-      expect(pickTransport("opencode-zen", "openai-responses", "opencode-zen", m)).toBeNull();
+      expect(pickTransport("opencode-zen", "openai-responses", "ocz", m)).toBeNull();
     }
   });
 });

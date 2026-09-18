@@ -1,9 +1,9 @@
 export default {
   id: "opencode-zen",
   priority: 205,
-  alias: "opencode-zen",
+  alias: "ocz",
   aliases: [
-    "ocz",
+    "opencode-zen",
   ],
   uiAlias: "ocz",
   display: {
